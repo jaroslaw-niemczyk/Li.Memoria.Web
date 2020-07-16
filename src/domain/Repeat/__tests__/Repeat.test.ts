@@ -15,8 +15,8 @@ describe('Repeat', () => {
       const id = index + 1;
       expect(repeat.questionsToRepeat[index].questionToRepeat.id).toEqual(id);
       expect(repeat.questionsToRepeat[index].questionToRepeat.answer).toEqual('a' + id);
-      expect(repeat.questionsToRepeat[index].repeatQuestionAfterDays).toEqual(undefined);
-      expect(repeat.questionsToRepeat[index].repeatAnswerAfterDays).toEqual(undefined);
+      expect(repeat.questionsToRepeat[index].repeatQuestionAsQuestionAfterDays).toEqual(undefined);
+      expect(repeat.questionsToRepeat[index].repeatQuestionAsAnswerAfterDays).toEqual(undefined);
       expect(repeat.questionsToRepeat[index].savedAnswer).toEqual(undefined);
     });
   });
@@ -71,6 +71,7 @@ describe('Repeat', () => {
 
     repeat.next();
     expect(repeat.setRepeatAfterDays('3').allowSave()).toEqual(false);
+    expect(repeat.getQuestionToRepeat()?.question).toEqual(questions[1].answer);
     expect(repeat.setRepeatAfterDays('1').allowSave()).toEqual(false);
     expect(repeat.getQuestionToRepeat()?.question).toEqual(questions[1].question);
     expect(repeat.getQuestionToRepeat()?.answer).toEqual(questions[1].answer);
@@ -78,5 +79,37 @@ describe('Repeat', () => {
     expect(repeat.getQuestionToRepeat()?.question).toEqual(questions[1].answer);
     expect(repeat.getQuestionToRepeat()?.answer).toEqual(questions[1].question);
     expect(repeat.setRepeatAfterDays('1').allowSave()).toEqual(true);
+  });
+
+  it('test that if setRepeatAfterDays value is "know" then save is allowed', () => {
+    let repeat = new Repeat(questions);
+    expect(repeat.setRepeatAfterDays('know').allowSave()).toEqual(true);
+
+    repeat = new Repeat(questions, true);
+    expect(repeat.setRepeatAfterDays('know').allowSave()).toEqual(true);
+  });
+
+  it('test that if setRepeatAfterDays value is "repeat" then save is not allowed', () => {
+    let repeat = new Repeat(questions);
+    expect(repeat.setRepeatAfterDays('repeat').allowSave()).toEqual(false);
+
+    repeat = new Repeat(questions, true);
+    expect(repeat.setRepeatAfterDays('repeat').allowSave()).toEqual(false);
+    expect(repeat.setRepeatAfterDays('repeat').allowSave()).toEqual(false);
+  });
+
+  it('test that if switchQuestionAsAnswer is true and question is repeated over time, the answer and question are switching their place', () => {
+    const repeat = new Repeat(questions, true);
+
+    repeat.setRepeatAfterDays('repeat');
+    repeat.next();
+    repeat.next();
+    repeat.next();
+    expect(repeat.getQuestionToRepeat()?.question).toEqual(questions[0].answer);
+    repeat.setRepeatAfterDays('repeat');
+    repeat.next();
+    repeat.next();
+    repeat.next();
+    expect(repeat.getQuestionToRepeat()?.question).toEqual(questions[0].question);
   });
 });

@@ -58,10 +58,33 @@
     <div class="container">
       <div class="row">
         <div class="col-12 py-2">
-          <div id="repeat" data-question="aaa" data-answer="bbb" data-edit-url="www.onet.pl"></div>
-        </div>
+          <div id="repeat"
+               data-get-questions-url="/getQuestionsUrl.json"
+               data-save-repeat-after-days-url="/getQuestionsUrl.json"
+               data-switch-question-as-answer="true" />
+          </div>
+
+<!--          <div id="repeat" data-question="aaa" data-answer="bbb" data-edit-url="www.onet.pl"></div>-->
+
+      </div>
       </div>
     </div>
+    <script type="text/javascript">
+      function docReady(fn) {
+        // see if DOM is already available
+        if (document.readyState === "complete" || document.readyState === "interactive") {
+          // call on next available tick
+          setTimeout(fn, 1);
+        } else {
+          document.addEventListener("DOMContentLoaded", fn);
+        }
+      }
+
+      docReady((_) => {
+        window.renderRepeatQuestionsComponent();
+        // window.renderRepeatQuestionComponent();
+      });
+    </script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.
